@@ -36,15 +36,4 @@ public class RenderService {
         } else return ResponseEntity.status(400).body(signUpFailed);
     }
 
-    public ResponseEntity<String> signInResponse(User user) {
-        if(userRepository.existsById(user.getUser_id())) {
-            if(userRepository.userAndPasswordExist(user.getUser_id(), user.getPassword())) {
-                user.setIs_logged_in(true);
-                userRepository.save(user);
-                return ResponseEntity.status(HttpStatus.OK).body(signInSuccessful);
-            } else return ResponseEntity.status(400).body(incorrectPassword);
-        }
-        return ResponseEntity.status(400).body(incorrectID);
-    }
-
 }

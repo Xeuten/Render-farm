@@ -7,7 +7,4 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query(value = "SELECT CASE WHEN COUNT(user_id) > 0 THEN TRUE ELSE FALSE END FROM users WHERE user_id = :userID AND password = :password",
-    nativeQuery = true)
-    boolean userAndPasswordExist(@Param("userID") Long userId, @Param("password") String password);
 }
