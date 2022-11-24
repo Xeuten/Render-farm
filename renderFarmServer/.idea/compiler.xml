@@ -5,8 +5,8 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="renderFarmServer.renderFarmServer.main" target="17" />
-      <module name="renderFarmServer.renderFarmServer.test" target="17" />
+      <module name="renderFarmServer.renderFarmServer.main~1" target="17" />
+      <module name="renderFarmServer.renderFarmServer.test~1" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

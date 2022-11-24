@@ -3,6 +3,7 @@ package com.example.renderFarmServer.model;
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Random;
+import java.util.UUID;
 
 @Entity
 @Table(name="user_tasks")
@@ -10,9 +11,17 @@ public class UserTask {
 
     public UserTask(){}
 
-    public UserTask(Long taskId, Long userId) {
-        this.task_id = taskId;
-        this.user_id = userId;
+    public UserTask(String username, String taskName) {
+        this.username = username;
+        this.task_name = taskName;
+        this.start_time = OffsetDateTime.now();
+        this.status = UserTaskStatus.RENDERING;
+        this.render_time = (Math.abs(new Random().nextInt()) % 240) + 60;
+    }
+
+    public UserTask(UserTask userTask) {
+        this.username = userTask.getUsername();
+        this.task_name = userTask.getTask_name();
         this.start_time = OffsetDateTime.now();
         this.status = UserTaskStatus.RENDERING;
         this.render_time = (Math.abs(new Random().nextInt()) % 240) + 60;
@@ -20,10 +29,14 @@ public class UserTask {
 
     @Id
     @Column
-    private Long task_id;
+    @GeneratedValue
+    private UUID task_id;
 
     @Column
-    private Long user_id;
+    private String username;
+
+    @Column
+    private String task_name;
 
     @Column
     private OffsetDateTime start_time;
@@ -38,13 +51,17 @@ public class UserTask {
     @Transient
     private Integer render_time;
 
-    public Long getTask_id() { return task_id; }
+    public UUID getTask_id() { return task_id; }
 
-    public void setTask_id(Long task_id) { this.task_id = task_id; }
+    public void setTask_id(UUID task_id) { this.task_id = task_id; }
 
-    public Long getUser_id() { return user_id; }
+    public String getUsername() { return username; }
 
-    public void setUser_id(Long user_id) { this.user_id = user_id; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getTask_name() { return task_name; }
+
+    public void setTask_name(String task_name) { this.task_name = task_name; }
 
     public OffsetDateTime getStart_time() { return start_time;}
 
