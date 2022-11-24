@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SignInController {
+public class LoginController {
 
     @Autowired
     RenderService signInService;
-
-    @PostMapping("/sign_in")
+    @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<String> signUp(@RequestBody User user) {
-        return signInService.signInResponse(user);
+    public ResponseEntity<String> logIn(@RequestBody User user) {
+        return signInService.logInResponse(user);
     }
 }

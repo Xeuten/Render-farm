@@ -1,7 +1,17 @@
 CREATE TABLE IF NOT EXISTS "public"."users" (
-    "user_id"     BIGINT,
+    "username"    TEXT NOT NULL,
     "password"    TEXT NOT NULL,
-    "is_logged_in" BOOLEAN,
-    PRIMARY KEY ("user_id")
+    PRIMARY KEY ("username")
+
+);
+
+CREATE TABLE IF NOT EXISTS "public"."user_tasks" (
+    "task_id"     BIGINT,
+    "username"    TEXT NOT NULL,
+    "task_name"   TEXT NOT NULL,
+    "start_time"  TIMESTAMP WITH TIME ZONE NOT NULL,
+    "end_time"    TIMESTAMP WITH TIME ZONE,
+    "status"      TEXT NOT NULL,
+    PRIMARY KEY ("task_id")
 
 );

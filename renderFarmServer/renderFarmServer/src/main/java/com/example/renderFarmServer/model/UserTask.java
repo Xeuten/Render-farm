@@ -10,9 +10,8 @@ public class UserTask {
 
     public UserTask(){}
 
-    public UserTask(Long taskId, Long userId) {
-        this.task_id = taskId;
-        this.user_id = userId;
+    public UserTask( String userId) {
+        this.username = userId;
         this.start_time = OffsetDateTime.now();
         this.status = UserTaskStatus.RENDERING;
         this.render_time = (Math.abs(new Random().nextInt()) % 240) + 60;
@@ -20,10 +19,14 @@ public class UserTask {
 
     @Id
     @Column
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long task_id;
 
     @Column
-    private Long user_id;
+    private String username;
+
+    @Column
+    private String task_name;
 
     @Column
     private OffsetDateTime start_time;
@@ -42,9 +45,13 @@ public class UserTask {
 
     public void setTask_id(Long task_id) { this.task_id = task_id; }
 
-    public Long getUser_id() { return user_id; }
+    public String getUsername() { return username; }
 
-    public void setUser_id(Long user_id) { this.user_id = user_id; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getTask_name() { return task_name; }
+
+    public void setTask_name(String task_name) { this.task_name = task_name; }
 
     public OffsetDateTime getStart_time() { return start_time;}
 
