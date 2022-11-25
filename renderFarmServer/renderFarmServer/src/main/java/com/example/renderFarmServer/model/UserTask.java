@@ -67,7 +67,11 @@ public class UserTask {
 
     public OffsetDateTime getEnd_time() { return end_time; }
 
+    public void setEnd_time(OffsetDateTime end_time) { this.end_time = end_time; }
+
     public UserTaskStatus getStatus() { return status; }
+
+    public void setStatus(UserTaskStatus status) { this.status = status; }
 
     public Integer getRender_time() { return render_time; }
 }

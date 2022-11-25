@@ -2,6 +2,7 @@ package com.example.renderFarmServer.service;
 
 import com.example.renderFarmServer.model.User;
 import com.example.renderFarmServer.model.UserTask;
+import com.example.renderFarmServer.model.UserTaskStatus;
 import com.example.renderFarmServer.persistence.UserRepository;
 import com.example.renderFarmServer.persistence.UserTasksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Service
 public class RenderService {
@@ -18,6 +22,24 @@ public class RenderService {
 
     @Autowired
     private UserTasksRepository userTasksRepository;
+
+    private class ScheduledTaskCompletion extends TimerTask {
+
+        public ScheduledTaskCompletion(){}
+
+        public ScheduledTaskCompletion(UserTask userTask) {
+            this.userTask = userTask;
+        }
+
+        private UserTask userTask;
+
+        public void run() {
+            userTask.setEnd_time(userTask.getStart_time().plusSeconds(userTask.getRender_time()));
+            userTask.setStatus(UserTaskStatus.COMPLETE);
+            userTasksRepository.updateTask(userTask.getEnd_time(), userTask.getStatus().toString(), userTask.getTask_id().toString());
+        }
+
+    }
 
     @Value("${messages.signUpSuccessful}")
     private String signUpSuccessful;
@@ -41,10 +63,13 @@ public class RenderService {
 
     public ResponseEntity<String> createNewTaskResponse(UserTask userTask) {
         if(userRepository.existsById(userTask.getUsername())) {
-            userTasksRepository.save(new UserTask(userTask));
+            UserTask newTask = new UserTask(userTask);
+            userTasksRepository.save(newTask);
+            new Timer().schedule(new ScheduledTaskCompletion(newTask), newTask.getRender_time() * 1000);
             return ResponseEntity.status(HttpStatus.OK).body(taskCreated);
         }
         return ResponseEntity.status(400).body(nonExistentUser);
     }
 
 }
+    
