@@ -11,7 +11,7 @@ public class User {
 
     public User(){}
 
-    public User(String userId) { this.username = userId; }
+    public User(String username) { this.username = username; }
 
     @Id
     @Column

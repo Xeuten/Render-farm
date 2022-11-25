@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,8 +52,11 @@ public class RenderService {
     @Value("${messages.taskCreated}")
     private String taskCreated;
 
-    @Value(("${messages.nonExistentUser}"))
+    @Value("${messages.nonExistentUser}")
     private String nonExistentUser;
+
+    @Value("${messages.error}")
+    private String error;
 
     public ResponseEntity<String> signUpResponse(User user) {
         if(!userRepository.existsById(user.getUsername())) {
@@ -71,5 +76,15 @@ public class RenderService {
         return ResponseEntity.status(400).body(nonExistentUser);
     }
 
+    public ResponseEntity<HashMap<String, Object>> browseCurrentTasksResponse(String username) {
+        HashMap<String, Object> outputMap = new HashMap<>();
+        if(userRepository.existsById(username)) {
+            outputMap.put("taskList", new ArrayList<>(userTasksRepository.tasksList(username)
+                    .stream().map(UserTask::toHashMap).toList()));
+            return ResponseEntity.status(HttpStatus.OK).body(outputMap);
+        }
+        outputMap.put(error, nonExistentUser);
+        return ResponseEntity.status(400).body(outputMap);
+    }
+
 }
-    

@@ -1,6 +1,5 @@
 package com.example.renderFarmServer.controllers;
 
-import com.example.renderFarmServer.model.User;
 import com.example.renderFarmServer.model.UserTask;
 import com.example.renderFarmServer.service.RenderService;
 import org.springframework.beans.factory.annotation.Autowired;

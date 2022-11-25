@@ -2,6 +2,7 @@ package com.example.renderFarmServer.model;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
@@ -74,4 +75,15 @@ public class UserTask {
     public void setStatus(UserTaskStatus status) { this.status = status; }
 
     public Integer getRender_time() { return render_time; }
+
+    public HashMap<String, String> toHashMap() {
+        HashMap<String, String> outputMap = new HashMap<>();
+        outputMap.put("taskID", this.task_id.toString());
+        outputMap.put("username", this.username);
+        outputMap.put("taskName", this.task_name);
+        outputMap.put("startTime", this.start_time.toString());
+        if(end_time != null) outputMap.put("endTime", this.end_time.toString());
+        outputMap.put("status", this.status.toString());
+        return outputMap;
+    }
 }
