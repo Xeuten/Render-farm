@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 @Service
 public class RenderService {
@@ -49,14 +46,30 @@ public class RenderService {
     @Value("${messages.signUpFailed}")
     private String signUpFailed;
 
+    @Value("${messages.taskAlreadyExists}")
+    private String taskAlreadyExists;
+
     @Value("${messages.taskCreated}")
     private String taskCreated;
 
     @Value("${messages.nonExistentUser}")
     private String nonExistentUser;
 
+    @Value("${messages.taskList}")
+    private String taskList;
+
     @Value("${messages.error}")
     private String error;
+
+    @Value("${messages.browseFailed}")
+    private String browseFailed;
+
+    @Value("${messages.nonExistentTask}")
+    private String nonExistentTask;
+
+    @Value("${messages.viewFailed}")
+    private String viewFailed;
+
 
     public ResponseEntity<String> signUpResponse(User user) {
         if(!userRepository.existsById(user.getUsername())) {
@@ -68,23 +81,36 @@ public class RenderService {
 
     public ResponseEntity<String> createNewTaskResponse(UserTask userTask) {
         if(userRepository.existsById(userTask.getUsername())) {
+            if(userTasksRepository.taskExists(userTask.getUsername(), userTask.getTask_name()))
+                return ResponseEntity.status(400).body(taskAlreadyExists);
             UserTask newTask = new UserTask(userTask);
             userTasksRepository.save(newTask);
             new Timer().schedule(new ScheduledTaskCompletion(newTask), newTask.getRender_time() * 1000);
             return ResponseEntity.status(HttpStatus.OK).body(taskCreated);
         }
-        return ResponseEntity.status(400).body(nonExistentUser);
+        return ResponseEntity.status(404).body(nonExistentUser);
     }
 
     public ResponseEntity<HashMap<String, Object>> browseCurrentTasksResponse(String username) {
         HashMap<String, Object> outputMap = new HashMap<>();
         if(userRepository.existsById(username)) {
-            outputMap.put("taskList", new ArrayList<>(userTasksRepository.tasksList(username)
+            outputMap.put(taskList, new ArrayList<>(userTasksRepository.tasksList(username)
                     .stream().map(UserTask::toHashMap).toList()));
             return ResponseEntity.status(HttpStatus.OK).body(outputMap);
         }
-        outputMap.put(error, nonExistentUser);
-        return ResponseEntity.status(400).body(outputMap);
+        outputMap.put(error, browseFailed);
+        return ResponseEntity.status(404).body(outputMap);
+    }
+
+    public ResponseEntity<String> viewTaskHistoryResponse(String username, String taskName) {
+        if(userRepository.existsById(username)) {
+            if(!userTasksRepository.taskExists(username, taskName)) return ResponseEntity.status(404).body(nonExistentTask);
+            UserTask selectedTask = userTasksRepository.selectTask(username, taskName);
+            String outputStr = "start_time: " + selectedTask.getStart_time().toString();
+            if(selectedTask.getEnd_time() != null) outputStr += "\nend_time: " + selectedTask.getEnd_time().toString();
+            return ResponseEntity.status(HttpStatus.OK).body(outputStr);
+        }
+        return ResponseEntity.status(404).body(viewFailed);
     }
 
 }

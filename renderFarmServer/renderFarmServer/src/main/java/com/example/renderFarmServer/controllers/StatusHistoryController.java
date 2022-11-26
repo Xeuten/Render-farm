@@ -8,17 +8,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-
 @RestController
-public class CurrentTasksController {
-
+public class StatusHistoryController {
     @Autowired
-    RenderService currentTasksService;
+    RenderService taskHistoryService;
 
-    @GetMapping("/current_tasks/{username}")
+    @GetMapping("/task_history/{username}/{taskName}")
     @ResponseBody
-    public ResponseEntity<HashMap<String, Object>> browseCurrentTasks(@PathVariable String username) {
-        return currentTasksService.browseCurrentTasksResponse(username);
+    public ResponseEntity<String> viewTaskHistory(@PathVariable String username,
+                                                                      @PathVariable String taskName) {
+        return taskHistoryService.viewTaskHistoryResponse(username, taskName);
     }
 }
