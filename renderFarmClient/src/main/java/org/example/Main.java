@@ -61,7 +61,7 @@ public class Main {
         String username = null;
         while(username == null) {
             if (signParts.length == 2) {
-                switch (signParts[0]) {
+                switch(signParts[0]) {
                     case "signUp" -> {
                         if(signUp(signParts[1]) == 200) {
                             System.out.println(signUpSuccessful + " " + signInSuccessful + inputHelp);
@@ -76,10 +76,8 @@ public class Main {
                     }
                     default -> System.out.println(incorrectCommand);
                 }
-            } else {
-                if(signParts.length == 1 && signParts[0].equals("quit")) return;
-                else System.out.println(incorrectCommand);
-            }
+            } else if(signParts.length == 1 && signParts[0].equals("quit")) return;
+            else System.out.println(incorrectCommand);
             if(username == null) {
                 command = r.readLine().trim();
                 signParts = command.split(" ");
