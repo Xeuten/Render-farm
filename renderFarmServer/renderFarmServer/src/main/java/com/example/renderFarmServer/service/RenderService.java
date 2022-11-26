@@ -30,6 +30,7 @@ public class RenderService {
             this.userTask = userTask;
         }
 
+        //Этот внутренний класс нужен для назначения отложенной смены статуса задачи при её создании.
         private UserTask userTask;
 
         public void run() {

@@ -13,17 +13,18 @@ import java.util.Arrays;
 public class Main {
 
     private final static String welcome = "Добро пожаловать. Введите \"signUp {имя пользователя}\", если хотите " +
-            "зарегистрироваться. Введите \"signIn {имя пользователя}\", если хотите войти.";
+            "зарегистрироваться. Введите \"signIn {имя пользователя}\", если хотите войти в учётную запись. Введите " +
+            "\"quit\", если хотите выйти из программы.";
 
     private final static String signUpSuccessful = "Регистрация прошла успешно.";
 
     private final static String signUpFailed = "Не удалось зарегистрировать нового пользователя, так как пользователь " +
-            "с данным именем уже содержится в базе. Введите другое имя пользователя.";
+            "с данным именем уже содержится в базе. Введите команду заново.";
 
-    private final static String signInSuccessful = "Вы вошли.";
+    private final static String signInSuccessful = "Вы вошли в учётную запись.";
 
-    private final static String signInFailed = "Не удалось войти, так как пользователь с данным именем не содержится " +
-            "в базе. Введите другое имя пользователя.";
+    private final static String signInFailed = "Не удалось войти, так как пользователь с данным именем не содержится в " +
+            "базе. Введите команду заново.";
 
     private final static String incorrectCommand = "Некорректная команда. Введите корректную команду.";
 
@@ -57,25 +58,32 @@ public class Main {
         BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
         String command = r.readLine().trim();
         String[] signParts = command.split(" ");
-        while(!((signParts[0].equals("signUp") || signParts[0].equals("signIn")) && signParts.length == 2)){
-            System.out.println(incorrectCommand);
-            command = r.readLine().trim();
-            signParts = command.split(" ");
-        }
-        String username;
-        username = signParts[1];
-        if(signParts[0].equals("signUp")) {
-            while(!signUp(username).equals(signUpSuccessful)) {
-                System.out.println(signUpFailed);
-                username = r.readLine().trim();
+        String username = null;
+        while(username == null) {
+            if (signParts.length == 2) {
+                switch (signParts[0]) {
+                    case "signUp" -> {
+                        if(signUp(signParts[1]) == 200) {
+                            System.out.println(signUpSuccessful + " " + signInSuccessful + inputHelp);
+                            username = signParts[1];
+                        } else System.out.println(signUpFailed);
+                    }
+                    case "signIn" -> {
+                        if(signUp(signParts[1]) == 200) {
+                            System.out.println(signInSuccessful + inputHelp);
+                            username = signParts[1];
+                        } else System.out.println(signInFailed);
+                    }
+                    default -> System.out.println(incorrectCommand);
+                }
+            } else {
+                if(signParts.length == 1 && signParts[0].equals("quit")) return;
+                else System.out.println(incorrectCommand);
             }
-            System.out.println(signUpSuccessful + " " + signInSuccessful + inputHelp);
-        } else {
-            while(!signIn(username).equals(signInSuccessful)) {
-                System.out.println(signInFailed);
-                username = r.readLine().trim();
+            if(username == null) {
+                command = r.readLine().trim();
+                signParts = command.split(" ");
             }
-            System.out.println(signInSuccessful + inputHelp);
         }
         command = r.readLine().trim();
         while(!command.equals("quit")) {
@@ -114,19 +122,19 @@ public class Main {
         return "\"task_name\": \"" + taskName + "\"";
     }
 
-    private static String signUp(String username) throws Exception {
-        return HttpClient.newHttpClient().send(buildHttpRequest(signUpUrl, "POST",
-                "{" + usernameFormat(username) + "}"), HttpResponse.BodyHandlers.ofString()).body();
+    private static int signUp(String username) throws Exception {
+        return HttpClient.newHttpClient().send(buildHttpRequest(signUpUrl, "POST", "{"
+                + usernameFormat(username) + "}"), HttpResponse.BodyHandlers.ofString()).statusCode();
     }
 
-    private static String signIn(String username) throws Exception {
+    private static int signIn(String username) throws Exception {
         return HttpClient.newHttpClient().send(buildHttpRequest(signInUrl + username, "GET", ""),
-                HttpResponse.BodyHandlers.ofString()).body();
+                HttpResponse.BodyHandlers.ofString()).statusCode();
     }
 
     private static void newTask(String username, String taskName) throws Exception {
-        System.out.println(HttpClient.newHttpClient().send(buildHttpRequest(newTaskUrl, "POST",
-                        "{" + usernameFormat(username) + ", " + taskNameFormat(taskName) + "}"),
+        System.out.println(HttpClient.newHttpClient().send(buildHttpRequest(newTaskUrl, "POST", "{"
+                        + usernameFormat(username) + ", " + taskNameFormat(taskName) + "}"),
                 HttpResponse.BodyHandlers.ofString()).body());
     }
 
