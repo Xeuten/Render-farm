@@ -15,8 +15,7 @@ public class StatusHistoryController {
 
     @GetMapping("/task_history/{username}/{taskName}")
     @ResponseBody
-    public ResponseEntity<String> viewTaskHistory(@PathVariable String username,
-                                                                      @PathVariable String taskName) {
+    public ResponseEntity<String> viewTaskHistory(@PathVariable String username, @PathVariable String taskName) {
         return taskHistoryService.viewTaskHistoryResponse(username, taskName);
     }
 }

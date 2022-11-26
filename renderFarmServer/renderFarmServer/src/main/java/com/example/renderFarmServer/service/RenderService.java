@@ -46,6 +46,12 @@ public class RenderService {
     @Value("${messages.signUpFailed}")
     private String signUpFailed;
 
+    @Value("${messages.signInSuccessful}")
+    private String signInSuccessful;
+
+    @Value("${messages.signInFailed}")
+    private String signInFailed;
+
     @Value("${messages.taskAlreadyExists}")
     private String taskAlreadyExists;
 
@@ -79,6 +85,12 @@ public class RenderService {
         return ResponseEntity.status(400).body(signUpFailed);
     }
 
+    public ResponseEntity<String> signInResponse(String username) {
+        if(userRepository.existsById(username)) return ResponseEntity.status(HttpStatus.OK).body(signInSuccessful);
+        return ResponseEntity.status(404).body(signInFailed);
+    }
+
+
     public ResponseEntity<String> createNewTaskResponse(UserTask userTask) {
         if(userRepository.existsById(userTask.getUsername())) {
             if(userTasksRepository.taskExists(userTask.getUsername(), userTask.getTask_name()))
@@ -106,8 +118,8 @@ public class RenderService {
         if(userRepository.existsById(username)) {
             if(!userTasksRepository.taskExists(username, taskName)) return ResponseEntity.status(404).body(nonExistentTask);
             UserTask selectedTask = userTasksRepository.selectTask(username, taskName);
-            String outputStr = "start_time: " + selectedTask.getStart_time().toString();
-            if(selectedTask.getEnd_time() != null) outputStr += "\nend_time: " + selectedTask.getEnd_time().toString();
+            String outputStr = "RENDERING: " + selectedTask.getStart_time().toString();
+            if(selectedTask.getEnd_time() != null) outputStr += "\nCOMPLETE: " + selectedTask.getEnd_time().toString();
             return ResponseEntity.status(HttpStatus.OK).body(outputStr);
         }
         return ResponseEntity.status(404).body(viewFailed);

@@ -12,14 +12,6 @@ public class UserTask {
 
     public UserTask(){}
 
-    public UserTask(String username, String taskName) {
-        this.username = username;
-        this.task_name = taskName;
-        this.start_time = OffsetDateTime.now();
-        this.status = UserTaskStatus.RENDERING;
-        this.render_time = (Math.abs(new Random().nextInt()) % 240) + 60;
-    }
-
     public UserTask(UserTask userTask) {
         this.username = userTask.getUsername();
         this.task_name = userTask.getTask_name();
@@ -79,10 +71,7 @@ public class UserTask {
     public HashMap<String, String> toHashMap() {
         HashMap<String, String> outputMap = new HashMap<>();
         outputMap.put("taskID", this.task_id.toString());
-        outputMap.put("username", this.username);
         outputMap.put("taskName", this.task_name);
-        outputMap.put("startTime", this.start_time.toString());
-        if(end_time != null) outputMap.put("endTime", this.end_time.toString());
         outputMap.put("status", this.status.toString());
         return outputMap;
     }

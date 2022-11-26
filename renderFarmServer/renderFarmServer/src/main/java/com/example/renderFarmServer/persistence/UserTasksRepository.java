@@ -26,6 +26,8 @@ public interface UserTasksRepository extends JpaRepository<UserTask, Long> {
             nativeQuery = true)
     boolean taskExists(@Param("username") String username, @Param("taskName") String taskName);
 
-    @Query(value = "SELECT * FROM user_tasks WHERE username = :username AND task_name = :taskName LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM user_tasks WHERE username = :username AND task_name = :taskName LIMIT 1",
+            nativeQuery = true)
     UserTask selectTask(@Param("username") String username, @Param("taskName") String taskName);
+
 }
