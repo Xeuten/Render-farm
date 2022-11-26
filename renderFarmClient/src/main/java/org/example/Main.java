@@ -43,7 +43,7 @@ public class Main {
     private static final String commandList = """
             Список команд:
             newTask {taskName} - создание новой задачи
-            currentTasks - отображение списка созданных задач
+            tasksList - отображение списка созданных задач
             statusHistory {taskName} - отображение истории смены статусов задачи
             quit - завершить работу программы""";
 
@@ -69,7 +69,7 @@ public class Main {
                         } else System.out.println(signUpFailed);
                     }
                     case "signIn" -> {
-                        if(signUp(signParts[1]) == 200) {
+                        if(signIn(signParts[1]) == 200) {
                             System.out.println(signInSuccessful + inputHelp);
                             username = signParts[1];
                         } else System.out.println(signInFailed);
@@ -96,7 +96,7 @@ public class Main {
             switch(commandParts[0]) {
                 case "help" -> System.out.println(commandList);
                 case "newTask" -> newTask(username, commandParts[1]);
-                case "currentTasks" -> currentTasks(username);
+                case "tasksList" -> currentTasks(username);
                 case "statusHistory" -> statusHistory(username, commandParts[1]);
                 default -> System.out.println(incorrectCommand);
             }
