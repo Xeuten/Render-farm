@@ -1,9 +1,14 @@
+package org.example;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
 
 public class Main {
 
@@ -24,21 +29,28 @@ public class Main {
 
     private final static String inputHelp = " Введите \"help\", чтобы вывести список команд.";
 
-    private final static String signUpUrl = "http://localhost:8080/sign_up";
+    private final static String signUpUrl = "http://localhost:80/sign_up";
 
-    private final static String signInUrl = "http://localhost:8080/sign_in/";
+    private final static String signInUrl = "http://localhost:80/sign_in/";
 
-    private final static String newTaskUrl = "http://localhost:8080/tasks";
+    private final static String newTaskUrl = "http://localhost:80/tasks";
 
-    private final static String currentTasksUrl = "http://localhost:8080/current_tasks/";
+    private final static String currentTasksUrl = "http://localhost:80/current_tasks/";
 
-    private final static String statusHistoryUrl = "http://localhost:8080/task_history/";
+    private final static String statusHistoryUrl = "http://localhost:80/task_history/";
 
     private static final String commandList = """
             Список команд:
             newTask {taskName} - создание новой задачи
             currentTasks - отображение списка созданных задач
-            statusHistory {taskName} - отображение истории смены статусов задачи""";
+            statusHistory {taskName} - отображение истории смены статусов задачи
+            quit - завершить работу программы""";
+
+    private static class TaskView {
+        public String taskID;
+        public String taskName;
+        public String status;
+    }
 
     public static void main(String[] args) throws Exception {
         System.out.println(welcome);
@@ -114,21 +126,24 @@ public class Main {
 
     private static void newTask(String username, String taskName) throws Exception {
         System.out.println(HttpClient.newHttpClient().send(buildHttpRequest(newTaskUrl, "POST",
-                "{" + usernameFormat(username) + ", " + taskNameFormat(taskName) + "}"),
+                        "{" + usernameFormat(username) + ", " + taskNameFormat(taskName) + "}"),
                 HttpResponse.BodyHandlers.ofString()).body());
     }
 
     private static void currentTasks(String username) throws Exception {
-        String outputStr =  HttpClient.newHttpClient().send(buildHttpRequest(currentTasksUrl + username,
-                "GET", ""), HttpResponse.BodyHandlers.ofString()).body()
-                .replace(",", ",\n").replace("{\"Список задач\":", "Список задач:\n")
-                .replace(":", ": ");
-        System.out.println(outputStr.substring(0, outputStr.length() - 1));
+        String outputStr = HttpClient.newHttpClient().send(buildHttpRequest(currentTasksUrl + username,
+                        "GET", ""), HttpResponse.BodyHandlers.ofString()).body();
+        outputStr = outputStr.substring(16, outputStr.length() - 1);
+        ObjectMapper mapper = new ObjectMapper();
+        TaskView[] taskView = mapper.readValue(outputStr, TaskView[].class);
+        System.out.println("Список задач:\n");
+        Arrays.stream(taskView).forEach((x) -> System.out.println("task ID:\t" + x.taskID + ",\ntask name:\t"
+                + x.taskName + ",\nstatus:\t" + x.status +"\n"));
     }
 
     private static void statusHistory(String username, String taskName) throws Exception {
         System.out.println(HttpClient.newHttpClient().send(buildHttpRequest(statusHistoryUrl + username + "/"
-            + taskName, "GET", ""), HttpResponse.BodyHandlers.ofString()).body());
+                + taskName, "GET", ""), HttpResponse.BodyHandlers.ofString()).body());
     }
 
 }
