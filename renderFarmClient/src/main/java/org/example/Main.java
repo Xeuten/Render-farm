@@ -88,7 +88,7 @@ public class Main {
             String[] commandParts = command.split(" ");
             if(commandParts.length < 1 || commandParts.length > 2) {
                 System.out.println(incorrectCommand);
-                command = r.readLine();
+                command = r.readLine().trim();
                 continue;
             }
             switch(commandParts[0]) {
@@ -140,11 +140,10 @@ public class Main {
         String outputStr = HttpClient.newHttpClient().send(buildHttpRequest(currentTasksUrl + username,
                         "GET", ""), HttpResponse.BodyHandlers.ofString()).body();
         outputStr = outputStr.substring(16, outputStr.length() - 1);
-        ObjectMapper mapper = new ObjectMapper();
-        TaskView[] taskView = mapper.readValue(outputStr, TaskView[].class);
         System.out.println("Список задач:\n");
-        Arrays.stream(taskView).forEach((x) -> System.out.println("task ID:\t" + x.taskID + ",\ntask name:\t"
-                + x.taskName + ",\nstatus:\t" + x.status +"\n"));
+        Arrays.stream(new ObjectMapper().readValue(outputStr, TaskView[].class)).forEach((x) ->
+                System.out.println("task ID:\t" + x.taskID + ",\ntask name:\t" + x.taskName + ",\nstatus:\t"
+                        + x.status +"\n"));
     }
 
     private static void statusHistory(String username, String taskName) throws Exception {
